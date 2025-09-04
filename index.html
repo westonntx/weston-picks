@@ -1,0 +1,235 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weston Picks & Kalshi</title>
+  <meta name="description" content="Daily sports picks and Kalshi boards by Weston (@westonntx).">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <style>
+    :root{
+      --sky:#0284c7; --sky-600:#0284c7; --sky-700:#0369a1;
+      --slate-50:#f8fafc; --slate-100:#f1f5f9; --slate-200:#e2e8f0; --slate-500:#64748b; --slate-700:#334155; --slate-900:#0f172a;
+    }
+    *{box-sizing:border-box} body{margin:0;font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial;
+      color:var(--slate-900); background:linear-gradient(to bottom,#fff,var(--slate-100));}
+    .container{max-width:1100px;margin:0 auto;padding:0 16px}
+    header{position:sticky;top:0;z-index:50;background:rgba(239,246,255,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--slate-200)}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+    a{color:inherit;text-decoration:none}
+    .navlink{font-size:14px;margin-left:12px;color:var(--slate-700)} .navlink:hover{color:var(--sky-600)}
+    .brand{font-weight:600;color:var(--sky-700)}
+    .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:8px 14px;font-size:14px;cursor:pointer;border:1px solid transparent}
+    .btn.primary{background:var(--sky-600);color:#fff} .btn.primary:hover{background:var(--sky-700)}
+    .btn.outline{border-color:var(--sky-600);color:var(--sky-700)} .btn.outline:hover{background:#e0f2fe}
+    .hero{padding:40px 0 24px} .title{font-weight:800;color:#075985;font-size:28px}
+    .muted{color:var(--slate-700)} .grid{display:grid;gap:16px}
+    @media(min-width:768px){.grid-2{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:repeat(3,1fr)}}
+    .card{background:#fff;border:1px solid var(--slate-200);border-radius:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+    .card .hd{padding:14px 16px 0} .card .ttl{font-weight:600;color:var(--sky-700)} .card .bd{padding:12px 16px 16px}
+    .chip{font-size:12px;border:1px solid var(--slate-300);background:#e0f2fe;color:var(--sky-700);padding:2px 8px;border-radius:999px}
+    .section{padding:36px 0} .section h2{color:#075985;font-size:22px;margin:0 0 16px;font-weight:700}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .spark{position:relative;height:96px;width:100%}
+    .footer{border-top:1px solid var(--slate-200);padding:16px 0;color:var(--slate-500);font-size:14px}
+    input[type=file]{display:none}
+    .uploader{border:1px solid var(--sky-600);color:var(--sky-700);border-radius:12px;padding:8px 14px;display:inline-flex;gap:8px;align-items:center;cursor:pointer}
+    .small{font-size:12px;color:var(--slate-500)}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <a href="#home" class="brand">Weston's Picks</a>
+        <div>
+          <a class="navlink" href="#picks">Today's Picks</a>
+          <a class="navlink" href="#kalshi">Kalshi Live</a>
+          <a class="navlink" href="#performance">Performance</a>
+          <a class="navlink" href="#about">About</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="home" class="hero">
+      <div class="container grid grid-2">
+        <div>
+          <h1 class="title">Daily Sports Picks & Kalshi Markets</h1>
+          <p class="muted">Upload a CSV to instantly update your picks. Blue‑grey vibe stays on brand. Not financial advice.</p>
+          <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+            <label class="uploader">
+              <span>📄 Import CSV</span>
+              <input id="csvInput" type="file" accept=".csv" />
+            </label>
+            <a class="btn outline" href="https://instagram.com/westonntx" target="_blank">@westonntx</a>
+          </div>
+          <p class="small" style="margin-top:8px">Expected headers: sport, matchup, pick, confidence, odds, unitSize, kickoff, note</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="picks" class="section">
+      <div class="container">
+        <div class="row">
+          <h2>Today's Picks</h2>
+          <div class="small">Updated <span id="updatedAt"></span></div>
+        </div>
+        <div id="picksGrid" class="grid grid-3"></div>
+      </div>
+    </section>
+
+    <section id="kalshi" class="section">
+      <div class="container">
+        <h2>Kalshi Live Board</h2>
+        <div id="kalshiGrid" class="grid grid-2"></div>
+      </div>
+    </section>
+
+    <section id="performance" class="section">
+      <div class="container">
+        <h2>Performance</h2>
+        <div class="card">
+          <div class="bd">
+            <div class="spark" id="spark"></div>
+            <div class="small" style="margin-top:10px">Cumulative ROI over time.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section">
+      <div class="container grid grid-2">
+        <div class="card">
+          <div class="hd"><div class="ttl">Hi, I'm Weston</div></div>
+          <div class="bd">
+            <p class="muted">I'm a UNT student who loves sports, geoscience, and building small tools. With CSV import, I can update my picks directly from a spreadsheet.</p>
+            <p class="small">Nothing here is financial advice. Do your own research and bet responsibly.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="hd"><div class="ttl">Connect</div></div>
+          <div class="bd">
+            <p><a class="btn outline" href="https://instagram.com/westonntx" target="_blank">Instagram @westonntx</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container row">
+      <div>© <span id="year"></span> Weston — Picks & Markets</div>
+      <div><a class="navlink" href="#picks">Picks</a> <a class="navlink" href="#kalshi">Kalshi</a> <a class="navlink" href="#about">About</a></div>
+    </div>
+  </footer>
+
+<script>
+  const DEFAULT_PICKS = [
+    { sport: "NFL", matchup: "Buccaneers @ Saints", pick: "Bucs +3.5", confidence: 0.64, odds: "-110", unitSize: 1, kickoff: "2025-09-07T12:00:00-05:00", note: "Matchup edge: WR vs CB injuries; low total favors points." },
+    { sport: "MLB", matchup: "Rangers vs Mariners", pick: "Rangers ML", confidence: 0.58, odds: "-120", unitSize: 0.75, kickoff: "2025-09-03T19:05:00-05:00", note: "Bullpen rest advantage; home split +." }
+  ];
+
+  const KALSHI = [
+    { label: "Will August CPI YoY be >= 3.0%?", yesPrice: 0.54, noPrice: 0.46, close: "2025-09-11T11:00:00-05:00", thesis: "Base effects diminishing; energy uptick risk. Looking for NO <= 0.44 to add." }
+  ];
+
+  const ROI = [
+    { date: "2025-08-20", roiPct: 0 },
+    { date: "2025-08-25", roiPct: 2.2 },
+    { date: "2025-08-29", roiPct: 3.4 },
+    { date: "2025-09-02", roiPct: 4.1 },
+  ];
+
+  function fmtDate(d){ return new Date(d).toLocaleString(); }
+
+  function renderPicks(list){
+    const g = document.getElementById("picksGrid");
+    g.innerHTML = "";
+    list.forEach(p => {
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = \`
+        <div class="hd"><div class="ttl">\${p.sport} • \${p.matchup}</div></div>
+        <div class="bd">
+          <div class="row"><strong>Pick:</strong> <span class="chip">\${p.pick}</span></div>
+          <div class="row"><span>Confidence</span> <strong>\${Math.round((+p.confidence||0.5)*100)}%</strong></div>
+          <div class="row"><span>Price</span> <strong>\${p.odds ?? "-"}</strong></div>
+          <div class="row"><span>Stake</span> <strong>\${(2.5 * (+p.unitSize || 1)).toFixed(2)} ( \${(+p.unitSize || 1)}u )</strong></div>
+          \${p.kickoff ? '<div class="small">Kickoff '+fmtDate(p.kickoff)+'</div>' : ''}
+          \${p.note ? '<p class="muted" style="margin-top:6px">'+p.note+'</p>' : ''}
+        </div>
+      \`;
+      g.appendChild(el);
+    });
+  }
+
+  function renderKalshi(){
+    const g = document.getElementById("kalshiGrid");
+    g.innerHTML = "";
+    KALSHI.forEach(m => {
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = \`
+        <div class="hd"><div class="ttl">\${m.label}</div><div class="small" style="margin-top:6px">Closes \${fmtDate(m.close)}</div></div>
+        <div class="bd">
+          <div class="grid grid-2">
+            <div class="card" style="border-radius:12px"><div class="bd" style="text-align:center"><div class="small">YES</div><div style="font-weight:700;font-size:18px">\${(m.yesPrice*100).toFixed(0)}¢</div></div></div>
+            <div class="card" style="border-radius:12px"><div class="bd" style="text-align:center"><div class="small">NO</div><div style="font-weight:700;font-size:18px">\${(m.noPrice*100).toFixed(0)}¢</div></div></div>
+          </div>
+          <p class="muted" style="margin-top:8px">\${m.thesis}</p>
+        </div>
+      \`;
+      g.appendChild(el);
+    });
+  }
+
+  function renderSpark(){
+    const el = document.getElementById("spark");
+    const w = el.clientWidth || 800, h = el.clientHeight || 96;
+    const min = Math.min(...ROI.map(d=>d.roiPct));
+    const max = Math.max(...ROI.map(d=>d.roiPct));
+    const span = Math.max(1, max-min);
+    const pts = ROI.map((d,i)=>{
+      const x = (i/(ROI.length-1))*w;
+      const y = h - ((d.roiPct-min)/span)*h;
+      return x+","+y;
+    }).join(" ");
+    el.innerHTML = \`
+      <svg viewBox="0 0 \${w} \${h}" width="100%" height="100%">
+        <polyline points="\${pts}" fill="none" stroke="rgb(2,132,199)" stroke-width="3"></polyline>
+        <line x1="0" x2="\${w}" y1="\${h-2}" y2="\${h-2}" stroke="rgb(226,232,240)" stroke-width="2"></line>
+      </svg>
+    \`;
+  }
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+  document.getElementById("updatedAt").textContent = new Date().toLocaleString();
+  renderPicks(DEFAULT_PICKS);
+  renderKalshi();
+  renderSpark();
+
+  document.getElementById("csvInput").addEventListener("change", (e) => {
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (res) => {
+        const rows = res.data.map(r => ({
+          sport: r.sport, matchup: r.matchup, pick: r.pick,
+          confidence: parseFloat(r.confidence), odds: r.odds,
+          unitSize: parseFloat(r.unitSize), kickoff: r.kickoff, note: r.note
+        })).filter(r => r.sport && r.matchup && r.pick);
+        renderPicks(rows.length ? rows : DEFAULT_PICKS);
+        document.getElementById("updatedAt").textContent = new Date().toLocaleString();
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
